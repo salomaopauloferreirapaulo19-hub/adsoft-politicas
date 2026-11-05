@@ -1,0 +1,22 @@
+name: Cancelar deploy travado do Pages
+on:
+  push:
+    paths:
+      - '.github/workflows/cancelar-deploy-travado.yml'
+permissions:
+  pages: write
+  contents: read
+jobs:
+  cancelar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancelar a publicacao travada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=d18595f626038cdbe11dce7fae26c7f13ed6fb8c
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/deployments/$id/cancel")
+          echo "HTTP $code"; cat out.json
